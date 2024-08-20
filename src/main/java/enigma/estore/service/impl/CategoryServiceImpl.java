@@ -1,10 +1,10 @@
 package enigma.estore.service.impl;
 
-import java.util.List;
-
+import enigma.estore.dto.request.category.CategoryDTO;
 import enigma.estore.utils.strings.ErrorResponseMessage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import enigma.estore.model.Category;
@@ -19,8 +19,12 @@ public class CategoryServiceImpl implements CategoryService{
     private final CategoryRepository categoryRepository;
 
     @Override
-    public Page<Category> index(Pageable pageable) {
-        return categoryRepository.findAll(pageable);
+    public Page<CategoryDTO> index(CategoryDTO criteria, Pageable pageable) {
+        if (criteria != null && criteria.getName() != null && !criteria.getName().trim().isEmpty()) {
+            return categoryRepository.findByNameContainingIgnoreCase(criteria.getName().trim(), pageable)
+                    .map(CategoryDTO::from);
+        }
+        return categoryRepository.findAll(pageable).map(CategoryDTO::from);
     }
 
     @Override

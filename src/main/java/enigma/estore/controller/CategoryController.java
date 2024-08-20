@@ -1,5 +1,6 @@
 package enigma.estore.controller;
 
+import enigma.estore.dto.request.category.CategoryDTO;
 import enigma.estore.dto.response.RenderJson;
 import enigma.estore.model.Category;
 import enigma.estore.service.CategoryService;
@@ -19,9 +20,9 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<?>index(Pageable pageable) {
+    public ResponseEntity<?>index(@ModelAttribute CategoryDTO params, Pageable pageable) {
         return RenderJson.pageFormat(
-                categoryService.index(pageable),
+                categoryService.index(params, pageable),
                 "OK",
                 HttpStatus.FOUND
         );

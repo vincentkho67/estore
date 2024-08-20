@@ -25,7 +25,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryService categoryService;
 
     @Override
-    public Page<Product> index(
+    public Page<ProductDTO> index(
             ProductSearchDTO criteria,
             Pageable pageable
     ) {
@@ -50,12 +50,7 @@ public class ProductServiceImpl implements ProductService {
                 ProductSpecification.withCategoryId(criteria.getCategory_id()),
                 c -> criteria.getCategory_id() != null
         ));
-        return productRepository.findAll(spec, pageable);
-    }
-
-    @Override
-    public List<Product> searchByCategoryId(Integer id) {
-        return productRepository.findByCategory_Id(id);
+        return productRepository.findAll(spec, pageable).map(ProductDTO::from);
     }
 
     @Override
@@ -94,6 +89,6 @@ public class ProductServiceImpl implements ProductService {
         if (!productRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorResponseMessage.PRODUCT_NOT_FOUND);
         }
-        productRepository.deleteById(id);
+        productRepository.deleteById(id); // this now calls softDelete
     }
 }

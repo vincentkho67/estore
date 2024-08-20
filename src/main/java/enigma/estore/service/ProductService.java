@@ -9,8 +9,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface ProductService {
-    Page<Product> index(ProductSearchDTO searchDTO, Pageable pageable);
-    List<Product> searchByCategoryId(Integer id);
+    Page<ProductDTO> index(ProductSearchDTO searchDTO, Pageable pageable);
     Product show(Integer id);
     Product create(ProductDTO product);
     Product update(Integer id, Product product);
