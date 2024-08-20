@@ -6,6 +6,7 @@ import enigma.estore.model.Product;
 import enigma.estore.service.ProductService;
 import enigma.estore.utils.strings.ApiUrl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,13 +19,14 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<?> index(
-            @RequestParam(required = false, name = "category_id") Integer categoryId
+            @RequestParam(required = false, name = "category_id") Integer categoryId,
+            Pageable pageable
     ) {
         if (categoryId != null) {
             return RenderJson.basicFormat(productService.searchByCategoryId(categoryId), "OK", HttpStatus.FOUND);
         }
 
-        return RenderJson.basicFormat(productService.index(), "OK", HttpStatus.FOUND);
+        return RenderJson.pageFormat(productService.index(pageable), "OK", HttpStatus.FOUND);
     }
 
     @GetMapping("/{id}")

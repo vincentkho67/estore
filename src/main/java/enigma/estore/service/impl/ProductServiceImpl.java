@@ -7,6 +7,8 @@ import enigma.estore.service.CategoryService;
 import enigma.estore.service.ProductService;
 import enigma.estore.utils.strings.ErrorResponseMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,8 +22,8 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryService categoryService;
 
     @Override
-    public List<Product> index() {
-        return productRepository.findAll();
+    public Page<Product> index(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
     @Override

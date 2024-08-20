@@ -5,10 +5,11 @@ import enigma.estore.model.Category;
 import enigma.estore.service.CategoryService;
 import enigma.estore.utils.strings.ApiUrl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -18,8 +19,12 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public List<Category> index() {
-        return categoryService.index();
+    public ResponseEntity<?>index(Pageable pageable) {
+        return RenderJson.pageFormat(
+                categoryService.index(pageable),
+                "OK",
+                HttpStatus.FOUND
+        );
     }
 
     @GetMapping("/{id}")

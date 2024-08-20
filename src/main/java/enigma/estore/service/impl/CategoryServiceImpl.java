@@ -3,6 +3,8 @@ package enigma.estore.service.impl;
 import java.util.List;
 
 import enigma.estore.utils.strings.ErrorResponseMessage;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import enigma.estore.model.Category;
@@ -17,8 +19,8 @@ public class CategoryServiceImpl implements CategoryService{
     private final CategoryRepository categoryRepository;
 
     @Override
-    public List<Category> index() {
-        return categoryRepository.findAll();
+    public Page<Category> index(Pageable pageable) {
+        return categoryRepository.findAll(pageable);
     }
 
     @Override
