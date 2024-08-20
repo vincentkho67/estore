@@ -1,6 +1,6 @@
 package enigma.estore.service;
 
-import enigma.estore.dto.input.ProductDTO;
+import enigma.estore.dto.request.ProductDTO;
 import enigma.estore.model.Product;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package enigma.estore.dto.input;
+package enigma.estore.dto.request;
 
 import lombok.*;
 

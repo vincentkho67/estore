@@ -1,6 +1,6 @@
 package enigma.estore.controller;
 
-import enigma.estore.dto.output.RenderJson;
+import enigma.estore.dto.response.RenderJson;
 import enigma.estore.model.Category;
 import enigma.estore.service.CategoryService;
 import enigma.estore.utils.strings.ApiUrl;

@@ -1,6 +1,6 @@
-package enigma.estore.dto.output;
+package enigma.estore.dto.response;
 
-import enigma.estore.dto.output.format.BasicFormat;
+import enigma.estore.dto.response.format.BasicFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

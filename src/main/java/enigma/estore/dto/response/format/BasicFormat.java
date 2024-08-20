@@ -1,4 +1,4 @@
-package enigma.estore.dto.output.format;
+package enigma.estore.dto.response.format;
 
 import lombok.*;
 import org.springframework.http.HttpStatus;

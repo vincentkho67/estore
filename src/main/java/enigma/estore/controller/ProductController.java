@@ -1,7 +1,7 @@
 package enigma.estore.controller;
 
-import enigma.estore.dto.input.ProductDTO;
-import enigma.estore.dto.output.RenderJson;
+import enigma.estore.dto.request.ProductDTO;
+import enigma.estore.dto.response.RenderJson;
 import enigma.estore.model.Product;
 import enigma.estore.service.ProductService;
 import enigma.estore.utils.strings.ApiUrl;
@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(ApiUrl.BASE_URL + ApiUrl.PRODUCTS)

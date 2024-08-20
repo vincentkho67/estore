@@ -1,6 +1,6 @@
 package enigma.estore.service.impl;
 
-import enigma.estore.dto.input.ProductDTO;
+import enigma.estore.dto.request.ProductDTO;
 import enigma.estore.model.Product;
 import enigma.estore.repository.ProductRepository;
 import enigma.estore.service.CategoryService;
