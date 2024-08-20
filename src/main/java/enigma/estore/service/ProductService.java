@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface ProductService {
     List<Product> index();
+    List<Product> searchByCategoryId(Integer id);
     Product show(Integer id);
     Product create(ProductDTO product);
     Product update(Integer id, Product product);

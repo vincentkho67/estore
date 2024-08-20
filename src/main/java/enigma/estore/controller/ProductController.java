@@ -17,7 +17,13 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public ResponseEntity<?> index() {
+    public ResponseEntity<?> index(
+            @RequestParam(required = false, name = "category_id") Integer categoryId
+    ) {
+        if (categoryId != null) {
+            return RenderJson.basicFormat(productService.searchByCategoryId(categoryId), "OK", HttpStatus.FOUND);
+        }
+
         return RenderJson.basicFormat(productService.index(), "OK", HttpStatus.FOUND);
     }
 

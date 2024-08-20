@@ -25,6 +25,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<Product> searchByCategoryId(Integer id) {
+        return productRepository.findByCategory_Id(id);
+    }
+
+    @Override
     public Product show(Integer id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorResponseMessage.PRODUCT_NOT_FOUND));
