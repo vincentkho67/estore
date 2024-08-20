@@ -1,7 +1,9 @@
 package enigma.estore.service.impl;
 
+import enigma.estore.dto.input.ProductDTO;
 import enigma.estore.model.Product;
 import enigma.estore.repository.ProductRepository;
+import enigma.estore.service.CategoryService;
 import enigma.estore.service.ProductService;
 import enigma.estore.utils.strings.ErrorResponseMessage;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
+    private final CategoryService categoryService;
 
     @Override
     public List<Product> index() {
@@ -28,17 +31,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product create(Product product) {
-        if (product.getName() == null || product.getName().trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product name cannot be empty");
-        }
-        if (product.getPrice() == null || product.getPrice() < 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid product price");
-        }
-        if (product.getCategory() == null || product.getCategory().getId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category is required");
-        }
-        return productRepository.save(product);
+    public Product create(ProductDTO productDTO) {
+        Product newProduct = Product.builder()
+                .name(productDTO.getName())
+                .price(productDTO.getPrice())
+                .category(categoryService.show(productDTO.getCategory_id()))
+                .build();
+        return productRepository.save(newProduct);
     }
 
     @Override
@@ -59,7 +58,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void delete(Integer id) {
         if (!productRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorResponseMessage.PRODUCT_NOT_FOUND);
         }
         productRepository.deleteById(id);
     }

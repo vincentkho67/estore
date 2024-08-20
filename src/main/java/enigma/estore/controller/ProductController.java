@@ -1,9 +1,13 @@
 package enigma.estore.controller;
 
+import enigma.estore.dto.input.ProductDTO;
+import enigma.estore.dto.output.RenderJson;
 import enigma.estore.model.Product;
 import enigma.estore.service.ProductService;
 import enigma.estore.utils.strings.ApiUrl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,23 +19,23 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public List<Product> index() {
-        return productService.index();
+    public ResponseEntity<?> index() {
+        return RenderJson.basicFormat(productService.index(), "OK", HttpStatus.FOUND);
     }
 
     @GetMapping("/{id}")
-    public Product show(@PathVariable Integer id) {
-        return productService.show(id);
+    public ResponseEntity<?> show(@PathVariable Integer id) {
+        return RenderJson.basicFormat(productService.show(id), "OK", HttpStatus.FOUND);
     }
 
     @PostMapping
-    public Product create(@RequestBody Product product) {
-        return productService.create(product);
+    public ResponseEntity<?> create(@RequestBody ProductDTO product) {
+        return RenderJson.basicFormat(productService.create(product), "created", HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public Product update(@PathVariable Integer id, @RequestBody Product product) {
-        return productService.update(id, product);
+    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody Product product) {
+        return RenderJson.basicFormat(productService.update(id, product), "Updated", HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{id}")
