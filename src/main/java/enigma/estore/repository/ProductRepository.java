@@ -3,6 +3,7 @@ package enigma.estore.repository;
 import enigma.estore.model.Product;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Integer> {
+public interface ProductRepository extends JpaRepository<Product, Integer>, JpaSpecificationExecutor<Product> {
     // Method queries (derived query methods)
     List<Product> findByCategory_Id(Integer id);
     List<Product> findByPriceBetween(Double minPrice, Double maxPrice);

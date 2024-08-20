@@ -1,14 +1,17 @@
 package enigma.estore.service.impl;
 
-import enigma.estore.dto.request.ProductDTO;
+import enigma.estore.dto.request.product.ProductDTO;
+import enigma.estore.dto.request.product.ProductSearchDTO;
 import enigma.estore.model.Product;
 import enigma.estore.repository.ProductRepository;
 import enigma.estore.service.CategoryService;
 import enigma.estore.service.ProductService;
+import enigma.estore.utils.specification.ProductSpecification;
 import enigma.estore.utils.strings.ErrorResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -22,8 +25,32 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryService categoryService;
 
     @Override
-    public Page<Product> index(Pageable pageable) {
-        return productRepository.findAll(pageable);
+    public Page<Product> index(
+            ProductSearchDTO criteria,
+            Pageable pageable
+    ) {
+        Specification<Product> spec = Specification.where(null);
+
+        spec = spec.and(ProductSpecification.specificationFromPredicate(
+                ProductSpecification.withName(criteria.getName()),
+                c -> criteria.getName() != null && !criteria.getName().isEmpty()
+        ));
+
+        spec = spec.and(ProductSpecification.specificationFromPredicate(
+                ProductSpecification.withMinPrice(criteria.getMin_price()),
+                c -> criteria.getMin_price() != null
+        ));
+
+        spec = spec.and(ProductSpecification.specificationFromPredicate(
+                ProductSpecification.withMaxPrice(criteria.getMax_price()),
+                c -> criteria.getMax_price() != null
+        ));
+
+        spec = spec.and(ProductSpecification.specificationFromPredicate(
+                ProductSpecification.withCategoryId(criteria.getCategory_id()),
+                c -> criteria.getCategory_id() != null
+        ));
+        return productRepository.findAll(spec, pageable);
     }
 
     @Override

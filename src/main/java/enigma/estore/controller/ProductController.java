@@ -1,6 +1,7 @@
 package enigma.estore.controller;
 
-import enigma.estore.dto.request.ProductDTO;
+import enigma.estore.dto.request.product.ProductDTO;
+import enigma.estore.dto.request.product.ProductSearchDTO;
 import enigma.estore.dto.response.RenderJson;
 import enigma.estore.model.Product;
 import enigma.estore.service.ProductService;
@@ -19,14 +20,13 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<?> index(
-            @RequestParam(required = false, name = "category_id") Integer categoryId,
+            ProductSearchDTO params,
             Pageable pageable
     ) {
-        if (categoryId != null) {
-            return RenderJson.basicFormat(productService.searchByCategoryId(categoryId), "OK", HttpStatus.FOUND);
-        }
-
-        return RenderJson.pageFormat(productService.index(pageable), "OK", HttpStatus.FOUND);
+        return RenderJson.pageFormat(
+                productService.index(params, pageable),
+                "OK",
+                HttpStatus.FOUND);
     }
 
     @GetMapping("/{id}")
