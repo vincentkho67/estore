@@ -20,7 +20,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public Category show(@PathVariable int id) {
+    public Category show(@PathVariable Integer id) {
         return categoryService.show(id);
     }
 
@@ -30,12 +30,12 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public Category update(@PathVariable int id, @RequestBody Category category) {
+    public Category update(@PathVariable Integer id, @RequestBody Category category) {
         return categoryService.update(id, category);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable int id) {
+    public void delete(@PathVariable Integer id) {
         categoryService.delete(id);
     }
 }

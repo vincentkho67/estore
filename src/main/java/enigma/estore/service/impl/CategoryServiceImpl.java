@@ -1,6 +1,8 @@
 package enigma.estore.service.impl;
 
 import java.util.List;
+
+import enigma.estore.utils.strings.ErrorResponseMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import enigma.estore.model.Category;
@@ -22,7 +24,7 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     public Category show(Integer id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "category not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorResponseMessage.CATEGORY_NOT_FOUND));
     }
 
     @Override
@@ -49,7 +51,7 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     public void delete(Integer id) {
         if (!categoryRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorResponseMessage.CATEGORY_NOT_FOUND);
         }
         categoryRepository.deleteById(id);
     }
