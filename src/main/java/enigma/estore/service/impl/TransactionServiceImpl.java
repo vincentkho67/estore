@@ -7,6 +7,7 @@ import enigma.estore.model.Transaction;
 import enigma.estore.model.TransactionDetail;
 import enigma.estore.model.User;
 import enigma.estore.repository.TransactionRepository;
+import enigma.estore.service.EmailService;
 import enigma.estore.service.ProductService;
 import enigma.estore.service.TransactionService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final ProductService productService;
+    private final EmailService emailService;
 
     @Override
     public Page<TransactionBasicFormat> index(Pageable pageable) {
@@ -45,6 +47,12 @@ public class TransactionServiceImpl implements TransactionService {
         trans.setTotalAmount(totalAmount);
 
         Transaction savedTransaction = transactionRepository.save(trans);
+
+        // Asynchronously send confirmation email
+        emailService.sendTransactionConfirmationEmail(
+                user.getEmail(), "Transaction ID: " + savedTransaction.getId() + ", Total Amount: " + totalAmount
+        );
+
         return TransactionBasicFormat.from(savedTransaction);
     }
 
