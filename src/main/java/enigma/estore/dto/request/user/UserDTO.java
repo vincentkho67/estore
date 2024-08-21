@@ -14,6 +14,7 @@ public class UserDTO {
 
         public static UserBasicFormat from(User user) {
             return UserBasicFormat.builder()
+                    .email(user.getEmail())
                     .fullName(user.getFirstName() + " " + user.getLastName())
                     .build();
         }

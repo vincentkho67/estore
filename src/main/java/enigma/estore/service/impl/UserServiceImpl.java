@@ -70,6 +70,12 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll(pageable).map(UserDTO.UserBasicFormat::from);
     }
 
+    @Override
+    public User show(Integer id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+    }
+
     @PostConstruct
     public void initAdmin() {
         Optional<User> cred = userRepository.findByUsername(adminUsername);

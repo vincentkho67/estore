@@ -10,4 +10,5 @@ public interface UserService {
     User register(RegisterRequest req);
     String login(LoginRequest req);
     Page<UserDTO.UserBasicFormat> index(Pageable pageable);
+    User show(Integer id);
 }
