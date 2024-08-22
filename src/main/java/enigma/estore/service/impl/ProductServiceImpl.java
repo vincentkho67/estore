@@ -9,6 +9,8 @@ import enigma.estore.service.ProductService;
 import enigma.estore.utils.specification.ProductSpecification;
 import enigma.estore.utils.strings.ErrorResponseMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,6 +27,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryService categoryService;
 
     @Override
+    @Cacheable(value = "productList", key = "#criteria.toString() + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<ProductDTO> index(
             ProductSearchDTO criteria,
             Pageable pageable
@@ -54,12 +57,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "product", key = "#id")
     public Product show(Integer id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorResponseMessage.PRODUCT_NOT_FOUND));
     }
 
     @Override
+    @CacheEvict(value = {"product", "productList"}, allEntries = true)
     public Product create(ProductDTO productDTO) {
         Product newProduct = Product.builder()
                 .name(productDTO.getName())
