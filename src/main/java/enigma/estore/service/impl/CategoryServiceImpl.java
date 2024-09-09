@@ -1,17 +1,17 @@
 package enigma.estore.service.impl;
 
-import enigma.estore.dto.request.category.CategoryDTO;
-import enigma.estore.utils.strings.ErrorResponseMessage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import enigma.estore.dto.request.category.CategoryDTO;
 import enigma.estore.model.Category;
 import enigma.estore.repository.CategoryRepository;
 import enigma.estore.service.CategoryService;
+import enigma.estore.utils.strings.ErrorResponseMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor

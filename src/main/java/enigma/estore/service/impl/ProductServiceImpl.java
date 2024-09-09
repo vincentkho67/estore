@@ -1,16 +1,5 @@
 package enigma.estore.service.impl;
 
-import enigma.estore.dto.request.product.ProductDTO;
-import enigma.estore.dto.request.product.ProductSearchDTO;
-import enigma.estore.model.Product;
-import enigma.estore.repository.ProductRepository;
-import enigma.estore.service.CategoryService;
-import enigma.estore.service.ProductService;
-import enigma.estore.utils.specification.ProductSpecification;
-import enigma.estore.utils.strings.ErrorResponseMessage;
-import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,20 +7,34 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import enigma.estore.dto.request.product.ProductDTO;
+import enigma.estore.dto.request.product.ProductSearchDTO;
+import enigma.estore.model.Product;
+import enigma.estore.repository.ProductRepository;
+import enigma.estore.service.CategoryService;
+import enigma.estore.service.ProductService;
+import enigma.estore.utils.RedisUtil;
+import enigma.estore.utils.specification.ProductSpecification;
+import enigma.estore.utils.strings.ErrorResponseMessage;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
+    private final RedisUtil redisUtil;
 
     @Override
-    @Cacheable(value = "productList", key = "#criteria.toString() + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
-    public Page<ProductDTO> index(
-            ProductSearchDTO criteria,
-            Pageable pageable
-    ) {
+    public Page<ProductDTO> index(ProductSearchDTO criteria, Pageable pageable) {
+        String cacheKey = "productList:" + criteria.toString() + '_' + pageable.getPageNumber() + '_' + pageable.getPageSize();
+        Page<ProductDTO> cachedResult = redisUtil.getCachedData(cacheKey, Page.class);
+        if (cachedResult != null) {
+            return cachedResult;
+        }
+        
         Specification<Product> spec = Specification.where(null);
 
         spec = spec.and(ProductSpecification.specificationFromPredicate(
@@ -53,25 +56,41 @@ public class ProductServiceImpl implements ProductService {
                 ProductSpecification.withCategoryId(criteria.getCategory_id()),
                 c -> criteria.getCategory_id() != null
         ));
-        return productRepository.findAll(spec, pageable).map(ProductDTO::from);
+
+        Page<ProductDTO> result = productRepository.findAll(spec, pageable).map(ProductDTO::from);
+
+        redisUtil.cacheData(cacheKey, result);
+
+        return result;
     }
 
     @Override
-    @Cacheable(value = "product", key = "#id")
     public Product show(Integer id) {
-        return productRepository.findById(id)
+        String cacheKey = "product:" + id;
+
+        Product cachedProduct = redisUtil.getCachedData(cacheKey, Product.class);
+        if (cachedProduct != null) {
+            return cachedProduct;
+        }
+
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorResponseMessage.PRODUCT_NOT_FOUND));
+
+        redisUtil.cacheData(cacheKey, product);
+
+        return product;
     }
 
     @Override
-    @CacheEvict(value = {"product", "productList"}, allEntries = true)
     public Product create(ProductDTO productDTO) {
         Product newProduct = Product.builder()
                 .name(productDTO.getName())
                 .price(productDTO.getPrice())
                 .category(categoryService.show(productDTO.getCategory_id()))
                 .build();
-        return productRepository.save(newProduct);
+        Product saved = productRepository.save(newProduct);
+        redisUtil.invalidateCaches("productList:*");
+        return saved;
     }
 
     @Override
@@ -86,7 +105,10 @@ public class ProductServiceImpl implements ProductService {
         if (product.getCategory() != null && product.getCategory().getId() != null) {
             existingProduct.setCategory(product.getCategory());
         }
-        return productRepository.save(existingProduct);
+        Product updated = productRepository.save(existingProduct);
+        redisUtil.invalidateCache("product:" + id);
+        redisUtil.invalidateCaches("productList:*");
+        return updated;
     }
 
     @Override
@@ -95,5 +117,7 @@ public class ProductServiceImpl implements ProductService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorResponseMessage.PRODUCT_NOT_FOUND);
         }
         productRepository.deleteById(id); // this now calls softDelete
+        redisUtil.invalidateCache("product:" + id);
+        redisUtil.invalidateCaches("productList:*");
     }
 }
